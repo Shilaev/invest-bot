@@ -1,0 +1,46 @@
+version: '3.9'
+
+networks:
+  invest-visor:
+    driver: bridge
+    
+services:
+  
+  invest-visor-db:
+    env_file:
+      - .env
+    container_name: ${invest_visor_container_name}
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${invest_visor_name}
+      POSTGRES_USER: ${invest_visor_username}
+      POSTGRES_PASSWORD: ${invest_visor_password}
+    ports:
+      - "${invest_visor_port}:5432"
+    networks:
+      - invest-visor
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${invest_visor_username} -d ${invest_visor_name}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+      
+  flyway:
+    image: flyway/flyway:11.3.1
+    container_name: invest-visor-flyway-migrations
+    depends_on:
+      - invest-visor-db
+    networks:
+      - invest-visor
+    volumes:
+      - ./db/flyway-migration:/flyway/sql:rw
+    environment:
+      FLYWAY_URL: jdbc:postgresql://invest-visor-db:5432/${invest_visor_name}
+      FLYWAY_USER: ${invest_visor_username}
+      FLYWAY_PASSWORD: ${invest_visor_password}
+      FLYWAY_BASELINE_ON_MIGRATE: ${flyway_baseline_on_migrate}
+      FLYWAY_CLEAN_DISABLED: ${flyway_clean_disabled}
+      FLYWAY_SCHEMAS: ${flyway_schemas}
+    command: ${flyway_commands}
