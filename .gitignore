@@ -1,0 +1,80 @@
+# Общие файлы и папки
+HELP.md
+.gradle
+build
+!gradlewrappergradle-wrapper.jar
+!srcmainbuild
+!srctestbuild
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin
+!srcmainbin
+!srctestbin
+
+### IntelliJ IDEA ###
+.idea
+.iws
+.iml
+.ipr
+out
+!srcmainout
+!srctestout
+
+### NetBeans ###
+nbprojectprivate
+nbbuild
+dist
+nbdist
+.nb-gradle
+
+### VS Code ###
+.vscode
+
+### Python ###
+# Папки и файлы, создаваемые Python
+__pycache__
+.py[cod]
+.pyo
+.pyd
+.egg-info
+dist
+build
+.egg
+.whl
+
+# Виртуальные окружения
+env
+venv
+ENV
+env.bak
+venv.bak
+
+# Файлы конфигурации
+.env
+.DS_Store
+.coverage
+.pytest_cache
+.mypy_cache
+.pylint.d
+.coverage.
+.hypothesis
+.tox
+.nox
+.coverage
+.pytest_cache
+.mypy_cache
+.pylint.d
+.coverage.
+.hypothesis
+.tox
+.nox
+
+# Логи
+.log

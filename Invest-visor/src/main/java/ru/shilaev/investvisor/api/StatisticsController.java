@@ -25,11 +25,8 @@ import ru.tinkoff.piapi.contract.v1.*;
 
 import java.util.ArrayList;
 
-// Аннотация, указывающая, что этот класс является контроллером REST
 @RestController
-// Указывает базовый путь для всех методов в этом контроллере
 @RequestMapping("statistics/api")
-// Аннотация, которая автоматически создает конструктор с параметрами для всех final полей
 @RequiredArgsConstructor
 public class StatisticsController {
 
