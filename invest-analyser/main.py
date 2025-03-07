@@ -23,6 +23,5 @@ def math_expectation(numbers):
 if __name__ == '__main__':
     values = np.array([1500, 1650, 1630, 1600, 1550])
 
-    # math_expectation(values)
+    print(math_expectation(values))
 
-    print(math_expectation([1, 2, 3]))
