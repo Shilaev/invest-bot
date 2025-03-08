@@ -13,11 +13,7 @@ import java.io.IOException;
 public class InvestVisorApplication {
 
     public static void main(String[] args) throws IOException {
-        ConfigurableApplicationContext run = SpringApplication.run(InvestVisorApplication.class, args);
-
-        MathematicsService mathematicsService = run.getBean("mathematicsService", MathematicsService.class);
-        AnalyticsApi.AnalyticsResult analyticsResult = mathematicsService.trySendNumbers();
-        System.out.println(analyticsResult.getResult());
+        SpringApplication.run(InvestVisorApplication.class, args);
 
     }
 

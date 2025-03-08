@@ -1,16 +1,16 @@
 package ru.shilaev.investvisor.service;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import ru.shilaev.investvisor.AnalyticsApi;
 import ru.shilaev.investvisor.AnalyticsApi.AnalyticsResult;
 import ru.shilaev.investvisor.AnalyticsApi.NumberArray;
 import ru.shilaev.investvisor.DataProcessingGrpc;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,22 +18,21 @@ public class MathematicsService {
 
     private final DataProcessingGrpc.DataProcessingBlockingStub dataProcessingBlockingStub;
 
-    public AnalyticsResult trySendNumbers() {
+    public AnalyticsResult getMathExpectation(ArrayList<BigDecimal> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            throw new IllegalArgumentException("Input numbers cannot be null or empty");
+        }
+
         NumberArray numberArray = NumberArray.newBuilder()
-                .addNumbers(2500.0)
-                .addNumbers(3600.0)
-                .addNumbers(3640.0)
-                .addNumbers(2540.0)
-                .addNumbers(4500.0)
-                .addNumbers(1000.0)
-                .addNumbers(2055.0)
-                .addNumbers(2055.0)
-                .addNumbers(2055.0)
-                .addNumbers(2055.0)
+                .addAllNumbers(numbers.stream()
+                        .map(BigDecimal::doubleValue) // Преобразуем BigDecimal в Double
+                        .collect(Collectors.toList())) // Собираем в список
                 .build();
 
-        AnalyticsResult analyticsResult = dataProcessingBlockingStub.processNumbers(numberArray);
-
-        return analyticsResult;
+        try {
+            return dataProcessingBlockingStub.processNumbers(numberArray);
+        } catch (Exception e) {
+            throw new RuntimeException("Error processing numbers", e);
+        }
     }
 }
