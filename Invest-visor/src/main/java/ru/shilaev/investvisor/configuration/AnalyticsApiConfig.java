@@ -17,6 +17,7 @@ public class AnalyticsApiConfig {
     @Bean(name = "analyticsApiManagedChannel")
     ManagedChannel analyticsApiManagedChannel() {
         return ManagedChannelBuilder.forTarget(address)
+                .maxInboundMessageSize(16 * 1024 * 1024)
                 .usePlaintext()
                 .build();
     }

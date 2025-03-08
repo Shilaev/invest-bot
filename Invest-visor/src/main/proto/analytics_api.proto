@@ -2,9 +2,6 @@ syntax = "proto3";
 
 package ru.shilaev.investvisor;
 
-// Передать данные для анализа, какие?
-// Для начала что-то простое. Передам числовую последовательность и все.
-
 message NumberArray {
   repeated double numbers = 1;
 }
