@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package ru.shilaev.investvisor;
+
+message NumberArray {
+  repeated double numbers = 1;
+}
+
+message AnalyticsResult {
+  double result = 1;
+}
+
+service DataProcessing {
+  rpc ProcessNumbers(NumberArray) returns (AnalyticsResult);
+}

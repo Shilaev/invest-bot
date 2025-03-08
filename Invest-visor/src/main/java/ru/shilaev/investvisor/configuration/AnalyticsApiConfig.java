@@ -16,15 +16,19 @@ import java.io.IOException;
 public class AnalyticsApiConfig {
 
     @Value("${analytics.server.port}")
-    private int analyticsServerPort;
+    private String address;
 
+    @Bean(name = "analyticsApiManagedChannel")
+    ManagedChannel analyticsApiManagedChannel() {
+        return ManagedChannelBuilder.forTarget("localhost" + address)
+                .maxInboundMessageSize(16 * 1024 * 1024)
+                .usePlaintext()
+                .build();
+    }
 
-    @Bean(name = "analyticsApiServer")
-    Server analyticsApiServer(DataProcessingGrpc.DataProcessingImplBase dataProcessingImplBase) throws IOException {
-        return ServerBuilder.forPort(this.analyticsServerPort)
-                .addService(dataProcessingImplBase)
-                .build()
-                .start();
+    @Bean
+    DataProcessingGrpc.DataProcessingBlockingStub dataProcessingBlockingStub(ManagedChannel analyticsApiManagedChannel) {
+        return DataProcessingGrpc.newBlockingStub(analyticsApiManagedChannel);
     }
 
 }
