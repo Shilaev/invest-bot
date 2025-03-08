@@ -1,6 +1,7 @@
 package ru.shilaev.investvisor.api;
 
 // Импорт необходимых библиотек и классов
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -13,14 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.shilaev.investvisor.AnalyticsApi;
+import ru.shilaev.investvisor.AnalyticsApi.AnalyticsResult;
 import ru.shilaev.investvisor.dto.controller.FindInstrumentRequestDto;
 import ru.shilaev.investvisor.dto.controller.GenerateHistoricCandlesXLSXRequestDto;
 import ru.shilaev.investvisor.dto.controller.GetHistoricCandlesRequestDto;
 import ru.shilaev.investvisor.dto.model.InstrumentHistoricCandleDto;
-import ru.shilaev.investvisor.service.ExcelService;
-import ru.shilaev.investvisor.service.R2DBCService;
-import ru.shilaev.investvisor.service.TInvestService;
-import ru.shilaev.investvisor.service.UtilsService;
+import ru.shilaev.investvisor.service.*;
 import ru.tinkoff.piapi.contract.v1.*;
 
 import java.util.ArrayList;
@@ -35,6 +35,12 @@ public class StatisticsController {
     private final UtilsService utilsService;
     private final ExcelService excelService;
     private final R2DBCService r2DBCService;
+    private final MathematicsService mathematicsService;
+
+    @PostMapping(value = "/test-message")
+    private void testMessage() {
+        mathematicsService.trySendNumbers();
+    }
 
     // Метод для поиска инструментов по запросу
     @PostMapping(value = "/find-instrument")

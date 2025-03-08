@@ -27,7 +27,7 @@ services:
       retries: 3
       start_period: 10s
       
-  flyway:
+  invest-visor-flyway:
     image: flyway/flyway:11.3.1
     container_name: invest-visor-flyway-migrations
     depends_on:

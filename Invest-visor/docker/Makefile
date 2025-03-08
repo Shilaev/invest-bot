@@ -5,4 +5,4 @@ ifneq ("$(wildcard $(ENV_FILE))","")
 endif
 
 start-db:
-	docker compose -f docker-compose.yml up invest-visor-db -d
+	docker compose -f docker-compose.yml up invest-visor-db flyway -d

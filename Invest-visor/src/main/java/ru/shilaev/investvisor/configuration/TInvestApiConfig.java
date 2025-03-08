@@ -3,6 +3,7 @@ package ru.shilaev.investvisor.configuration;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,8 @@ public class TInvestApiConfig {
     private String token; // Токен для аутентификации в API Tinkoff Invest
 
     // Метод для создания и настройки gRPC канала
-    @Bean ManagedChannel managedChannel() {
+    @Bean(name = "tInvestApiManagedChannel")
+    ManagedChannel tInvestApiManagedChannel() {
         return ManagedChannelBuilder.forTarget(this.host) // Установка целевого хоста
                 .useTransportSecurity() // Использование защищенного транспорта
                 .intercept(new BearerTokenAuthenticationInterceptor(this.token)) // Добавление интерсептора для аутентификации
@@ -30,13 +32,13 @@ public class TInvestApiConfig {
     }
 
     // Метод для создания блокирующего клиента для работы с сервисом инструментов
-    @Bean InstrumentsServiceBlockingStub instrumentsServiceBlockingStub(ManagedChannel managedChannel) {
-        return InstrumentsServiceGrpc.newBlockingStub(managedChannel); // Создание клиента с использованием канала
+    @Bean InstrumentsServiceBlockingStub instrumentsServiceBlockingStub(@Qualifier("tInvestApiManagedChannel") ManagedChannel tInvestApiManagedChannel) {
+        return InstrumentsServiceGrpc.newBlockingStub(tInvestApiManagedChannel); // Создание клиента с использованием канала
     }
 
     // Метод для создания блокирующего клиента для работы с сервисом рыночных данных
-    @Bean MarketDataServiceBlockingStub marketDataServiceBlockingStub(ManagedChannel managedChannel) {
-        return MarketDataServiceGrpc.newBlockingStub(managedChannel); // Создание клиента с использованием канала
+    @Bean MarketDataServiceBlockingStub marketDataServiceBlockingStub(@Qualifier("tInvestApiManagedChannel") ManagedChannel tInvestApiManagedChannel) {
+        return MarketDataServiceGrpc.newBlockingStub(tInvestApiManagedChannel); // Создание клиента с использованием канала
     }
 
 }
