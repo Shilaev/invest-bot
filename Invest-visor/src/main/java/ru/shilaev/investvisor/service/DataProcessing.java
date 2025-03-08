@@ -11,7 +11,8 @@ public class DataProcessing extends DataProcessingGrpc.DataProcessingImplBase {
         AnalyticsApi.AnalyticsResult build = AnalyticsApi.AnalyticsResult.newBuilder()
                 .setResult(111111111.1)
                 .build();
+
         responseObserver.onNext(build);
-        System.out.println(build);
+        responseObserver.onCompleted();
     }
 }

@@ -33,12 +33,6 @@ public class StatisticsController {
     private final UtilsService utilsService;
     private final ExcelService excelService;
     private final R2DBCService r2DBCService;
-    private final MathematicsService mathematicsService;
-
-    @PostMapping(value = "/test-message")
-    private void testMessage() {
-        mathematicsService.trySendNumbers();
-    }
 
     // Метод для поиска инструментов по запросу
     @PostMapping(value = "/find-instrument")
