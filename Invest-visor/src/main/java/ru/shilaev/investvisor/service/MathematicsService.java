@@ -2,9 +2,10 @@ package ru.shilaev.investvisor.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.shilaev.investvisor.AnalyticsApi.AnalyticsResult;
-import ru.shilaev.investvisor.AnalyticsApi.NumberArray;
-import ru.shilaev.investvisor.DataProcessingGrpc;
+import ru.shilaev.invest_bot.AnalyticsApi;
+import ru.shilaev.invest_bot.AnalyticsApi.NumberArray;
+import ru.shilaev.invest_bot.DataProcessingGrpc;
+import ru.shilaev.invest_bot.DataProcessingGrpc.DataProcessingBlockingStub;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -16,9 +17,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MathematicsService {
 
-    private final DataProcessingGrpc.DataProcessingBlockingStub dataProcessingBlockingStub;
+    private final DataProcessingBlockingStub dataProcessingBlockingStub;
 
-    public AnalyticsResult getMathExpectation(ArrayList<BigDecimal> numbers) {
+    public AnalyticsApi.AnalyticsResult getMathExpectation(List<BigDecimal> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             throw new IllegalArgumentException("Input numbers cannot be null or empty");
         }

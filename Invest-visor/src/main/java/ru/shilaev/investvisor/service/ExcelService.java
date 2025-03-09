@@ -3,16 +3,22 @@ package ru.shilaev.investvisor.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xddf.usermodel.chart.*;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import ru.shilaev.investvisor.dto.model.InstrumentHistoricCandleDto;
 
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,91 +31,112 @@ public class ExcelService {
     public ByteArrayResource generateHistoricCandlesExcelFile(String sheetLabel,
                                                               Instant from,
                                                               Instant to,
-                                                              ArrayList<InstrumentHistoricCandleDto> historicCandleDtoList) {
-        // Создание нового рабочего файла Excel
-        Workbook workbook = new XSSFWorkbook();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); // Поток для записи данных в массив байтов
+                                                              List<InstrumentHistoricCandleDto> historicCandleDtoList) {
+        // Конфигурационные константы
+        final int COLUMN_WIDTH = 20 * 400;
+        final int[] COLUMNS = {0, 1, 2, 3, 4};
+        final String[] HEADERS = {"Время", "Открытие", "Максимальная", "Минимальная", "Закрытие"};
 
-        // Создание нового листа в рабочем файле с заданным названием
-        Sheet sheet = workbook.createSheet(sheetLabel);
+        try (XSSFWorkbook workbook = new XSSFWorkbook();
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-        // Определение стилей для ячеек
-        CellStyle dateCellStyle = workbook.createCellStyle();
-        dateCellStyle.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("yyyy-MM-dd HH:mm:ss")); // Формат даты
-        dateCellStyle.setAlignment(HorizontalAlignment.LEFT); // Выравнивание по левому краю
+            XSSFSheet sheet = workbook.createSheet(sheetLabel);
 
-        CellStyle longCellStyle = workbook.createCellStyle();
-        longCellStyle.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("0.00")); // Формат для чисел с двумя знаками после запятой
-        longCellStyle.setAlignment(HorizontalAlignment.LEFT); // Выравнивание по левому краю
+            // Стили для ячеек
+            CellStyle textStyle = workbook.createCellStyle();
+            textStyle.setAlignment(HorizontalAlignment.CENTER);
 
-        // Установка ширины столбцов
-        for (int i = 0; i < 5; i++) {
-            sheet.setColumnWidth(i, 20 * 400); // Установка ширины для первых 5 столбцов
+            CellStyle dateStyle = workbook.createCellStyle();
+            dateStyle.setDataFormat(workbook.createDataFormat().getFormat("yyyy-MM-dd HH:mm:ss"));
+            dateStyle.setAlignment(HorizontalAlignment.LEFT);
+
+            CellStyle numberStyle = workbook.createCellStyle();
+            numberStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00"));
+            numberStyle.setAlignment(HorizontalAlignment.LEFT);
+
+            // Настройка ширины столбцов
+            for (int col : COLUMNS) {
+                sheet.setColumnWidth(col, COLUMN_WIDTH);
+            }
+
+            // Информация о выборке
+            Row titleRow = sheet.createRow(0);
+            addCell(titleRow, 0, sheetLabel, textStyle);
+
+            // Блок информации о датах
+            Row infoRow = sheet.createRow(1);
+            addCell(infoRow, 0, "Начиная с:", textStyle);
+            addCell(infoRow, 1, Date.from(from), dateStyle);
+
+            addCell(infoRow, 2, "Заканчивая:", textStyle);
+            addCell(infoRow, 3, Date.from(to), dateStyle);
+
+            // Заголовки таблицы
+            Row headerRow = sheet.createRow(2);
+            for (int i = 0; i < HEADERS.length; i++) {
+                headerRow.createCell(i).setCellValue(HEADERS[i]);
+            }
+
+            // Основные данные
+            List<BigDecimal> opens = new ArrayList<>();
+            List<BigDecimal> closes = new ArrayList<>();
+            List<BigDecimal> highs = new ArrayList<>();
+            List<BigDecimal> lows = new ArrayList<>();
+
+            for (int i = 0; i < historicCandleDtoList.size(); i++) {
+                InstrumentHistoricCandleDto candle = historicCandleDtoList.get(i);
+                Row row = sheet.createRow(i + 3);
+
+                // Дата
+                addCell(row, 0, Date.from(candle.time()), dateStyle);
+
+                // Цены
+                addCell(row, 1, candle.openPrice().doubleValue(), numberStyle);
+                opens.add(candle.openPrice());
+                addCell(row, 2, candle.highPrice().doubleValue(), numberStyle);
+                highs.add(candle.highPrice());
+                addCell(row, 3, candle.lowPrice().doubleValue(), numberStyle);
+                lows.add(candle.lowPrice());
+                addCell(row, 4, candle.closePrice().doubleValue(), numberStyle);
+                closes.add(candle.closePrice());
+            }
+
+            // Мат. ожидание
+            if (!historicCandleDtoList.isEmpty()) {
+                int lastRow = historicCandleDtoList.size() + 3;
+                Row mathExpectationRow = sheet.createRow(lastRow);
+
+                mathExpectationRow.createCell(0).setCellValue("Мат. ожидание");
+                addCell(mathExpectationRow, 0, "Мат. ожидание", textStyle);
+                addCell(mathExpectationRow, 1, mathService.getMathExpectation(opens).getResult(), numberStyle);
+                addCell(mathExpectationRow, 2, mathService.getMathExpectation(highs).getResult(), numberStyle);
+                addCell(mathExpectationRow, 3, mathService.getMathExpectation(lows).getResult(), numberStyle);
+                addCell(mathExpectationRow, 4, mathService.getMathExpectation(closes).getResult(), numberStyle);
+
+            }
+
+            workbook.write(outputStream);
+            return new ByteArrayResource(outputStream.toByteArray());
         }
+    }
 
-        // Создание заголовков для информации о периоде
-        Row infoHeader = sheet.createRow(0);
-        infoHeader.createCell(0).setCellValue("Начиная с:"); // Заголовок "Начиная с:"
-        Cell startDateCell = infoHeader.createCell(1);
-        startDateCell.setCellValue(Date.from(from)); // Дата начала
-        startDateCell.setCellStyle(dateCellStyle); // Применение стиля даты
 
-        infoHeader.createCell(2).setCellValue("Заканчивая:"); // Заголовок "Заканчивая:"
-        Cell endDateCell = infoHeader.createCell(3);
-        endDateCell.setCellValue(Date.from(to)); // Дата окончания
-        endDateCell.setCellStyle(dateCellStyle); // Применение стиля даты
+    private void addCell(Row row, int col, Double value, CellStyle style) {
+        Cell cell = row.createCell(col);
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
+    }
 
-        // Создание заголовков для таблицы с данными
-        Row tableHeader = sheet.createRow(1);
-        tableHeader.createCell(0).setCellValue("Время"); // Заголовок "Время"
-        tableHeader.createCell(1).setCellValue("Открытие"); // Заголовок "Открытие"
-        tableHeader.createCell(2).setCellValue("Закрытие"); // Заголовок "Закрытие"
-        tableHeader.createCell(3).setCellValue("High"); // Заголовок "High"
-        tableHeader.createCell(4).setCellValue("Low"); // Заголовок "Low"
+    private void addCell(Row row, int col, String value, CellStyle style) {
+        Cell cell = row.createCell(col);
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
+    }
 
-        // Заполнение таблицы данными
-        ArrayList<BigDecimal> openPrices = new ArrayList<>();
-        ArrayList<BigDecimal> closePrices = new ArrayList<>();
-        ArrayList<BigDecimal> highPrices = new ArrayList<>();
-        ArrayList<BigDecimal> lowPrices = new ArrayList<>();
-        int maxRows = historicCandleDtoList.size(); // Получение количества свечей
-        for (int i = 0; i < maxRows; i++) {
-            Row row = sheet.createRow(i + 2); // Создание новой строки для каждой свечи
-            InstrumentHistoricCandleDto candle = historicCandleDtoList.get(i); // Получение данных свечи
-
-            // Заполнение ячеек данными свечи
-            Cell timeCell = row.createCell(0);
-            timeCell.setCellValue(Date.from(candle.time())); // Время свечи
-            timeCell.setCellStyle(dateCellStyle); // Применение стиля даты
-
-            row.createCell(1).setCellValue(candle.openPrice().doubleValue()); // Цена открытия
-            row.getCell(1).setCellStyle(longCellStyle); // Применение стиля для чисел
-            openPrices.add(candle.openPrice());
-
-            row.createCell(2).setCellValue(candle.closePrice().doubleValue()); // Цена закрытия
-            row.getCell(2).setCellStyle(longCellStyle); // Применение стиля для чисел
-            closePrices.add(candle.closePrice());
-
-            row.createCell(3).setCellValue(candle.highPrice().doubleValue()); // Максимальная цена
-            row.getCell(3).setCellStyle(longCellStyle); // Применение стиля для чисел
-            highPrices.add(candle.highPrice());
-
-            row.createCell(4).setCellValue(candle.lowPrice().doubleValue()); // Минимальная цена
-            row.getCell(4).setCellStyle(longCellStyle); // Применение стиля для чисел
-            lowPrices.add(candle.lowPrice());
-        }
-
-        Row resultRow = sheet.createRow(maxRows + 2); // Создание строки для результатов
-        resultRow.createCell(0).setCellValue("Мат. ожидание");
-        resultRow.createCell(1).setCellValue(mathService.getMathExpectation(openPrices).getResult());
-        resultRow.createCell(2).setCellValue(mathService.getMathExpectation(closePrices).getResult());
-        resultRow.createCell(3).setCellValue(mathService.getMathExpectation(highPrices).getResult());
-        resultRow.createCell(4).setCellValue(mathService.getMathExpectation(lowPrices).getResult());
-
-        // Запись данных в выходной поток
-        workbook.write(outputStream);
-        // Возвращение ресурса с массивом байтов, содержащим Excel файл
-        return new ByteArrayResource(outputStream.toByteArray());
+    private void addCell(Row row, int col, Date value, CellStyle style) {
+        Cell cell = row.createCell(col);
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
     }
 
 }

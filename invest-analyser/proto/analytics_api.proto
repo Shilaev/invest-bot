@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package ru.shilaev.investvisor;
+package ru.shilaev.invest_bot;
 
 message NumberArray {
   repeated double numbers = 1;
