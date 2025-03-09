@@ -1,9 +1,9 @@
 from concurrent import futures
 import grpc
 
-from data_analysis.analyser_service import math_expectation
-from proto.analytics_api_pb2 import AnalyticsResult
-from proto.analytics_api_pb2_grpc import DataProcessingServicer, add_DataProcessingServicer_to_server
+from service.data_analytics.econometrics import math_expectation
+from grpc_server.proto.analytics_api_pb2 import AnalyticsResult
+from grpc_server.proto.analytics_api_pb2_grpc import DataProcessingServicer, add_DataProcessingServicer_to_server
 
 
 class DataProcessingService(DataProcessingServicer):
