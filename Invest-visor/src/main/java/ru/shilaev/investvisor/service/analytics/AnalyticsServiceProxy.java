@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.shilaev.invest_bot.AnalyticsApi;
+import ru.shilaev.investvisor.configuration.AnalyticsApiConfig;
 import ru.shilaev.investvisor.service.analytics.impl.GolangAnalyticsService;
 import ru.shilaev.investvisor.service.analytics.impl.PythonAnalyticsService;
 
@@ -17,14 +18,14 @@ public class AnalyticsServiceProxy implements AnalyticsService {
 
     private final PythonAnalyticsService pythonAnalyticsService;
     private final GolangAnalyticsService golangAnalyticsService;
-
-    @Value("${analytics.methods.provider.getMathExpectation}")
-    private String mathExpectationProvider;
+    private final AnalyticsApiConfig analyticsApiConfig;
 
     @Override
     public AnalyticsApi.AnalyticsResult getMathExpectation(List<BigDecimal> numbers) {
-        return mathExpectationProvider.equals("golang") ? golangAnalyticsService.getMathExpectation(numbers) :
+        return analyticsApiConfig.getMethods().get("getMathExpectation").equals("golang") ?
+                golangAnalyticsService.getMathExpectation(numbers) :
                 pythonAnalyticsService.getMathExpectation(numbers);
     }
+
 
 }

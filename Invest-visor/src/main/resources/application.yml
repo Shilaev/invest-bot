@@ -18,9 +18,10 @@ analytics:
       port: 9999
     golang:
       port: 8888
-  methods:
-    provider:
-        getMathExpectation: python
+  provider:
+    methods:
+      getMathExpectation: python
+      getLine: python
 
 # ============== T-Invest API ==============
 tinvest:
