@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: invest-visor
+
+# ============== r2dbc ==============
+  r2dbc:
+    url: r2dbc:postgresql://localhost:9988/invest_visor
+    username: invest_visor
+    password: invest_visor
+
+server:
+  port: 9981
+
+# ============== gRPC ==============
+analytics:
+  server:
+    python:
+      port: 9999
+    golang:
+      port: 8888
+  methods:
+    provider:
+        getMathExpectation: python
+
+# ============== T-Invest API ==============
+tinvest:
+  sandbox:
+    host: sandbox-invest-public-api.tinkoff.ru:443
+    token: t.UZs7onV1UrtVljiQXO487NYYlcUiNl837GvcJwMOzPNXPr-f94gyHq5JcOFkkEueAot9OEGbn4dUOEzl6pOE8Q

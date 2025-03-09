@@ -1,25 +1,28 @@
-package ru.shilaev.investvisor.service;
+package ru.shilaev.investvisor.service.analytics.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.shilaev.invest_bot.AnalyticsApi;
 import ru.shilaev.invest_bot.AnalyticsApi.NumberArray;
-import ru.shilaev.invest_bot.DataProcessingGrpc;
 import ru.shilaev.invest_bot.DataProcessingGrpc.DataProcessingBlockingStub;
+import ru.shilaev.investvisor.service.analytics.AnalyticsService;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-public class MathematicsService {
+public class PythonAnalyticsService implements AnalyticsService {
 
     private final DataProcessingBlockingStub dataProcessingBlockingStub;
 
-    public AnalyticsApi.AnalyticsResult getMathExpectation(List<BigDecimal> numbers) {
+    public PythonAnalyticsService(@Qualifier("pythonDataProcessingBlockingStub")
+                                  DataProcessingBlockingStub dataProcessingBlockingStub) {
+        this.dataProcessingBlockingStub = dataProcessingBlockingStub;
+    }
+
+    @Override public AnalyticsApi.AnalyticsResult getMathExpectation(List<BigDecimal> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             throw new IllegalArgumentException("Input numbers cannot be null or empty");
         }

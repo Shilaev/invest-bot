@@ -6,12 +6,11 @@ import org.apache.poi.ss.usermodel.*;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xddf.usermodel.chart.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import ru.shilaev.investvisor.dto.model.InstrumentHistoricCandleDto;
+import ru.shilaev.investvisor.service.analytics.AnalyticsServiceProxy;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -24,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExcelService {
 
-    private final MathematicsService mathService;
+    private final AnalyticsServiceProxy mathService;
 
     // Метод для генерации Excel файла с историческими свечами
     @SneakyThrows
