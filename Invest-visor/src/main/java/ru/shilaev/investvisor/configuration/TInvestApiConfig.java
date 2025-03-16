@@ -12,6 +12,9 @@ import ru.tinkoff.piapi.contract.v1.InstrumentsServiceGrpc;
 import ru.tinkoff.piapi.contract.v1.InstrumentsServiceGrpc.InstrumentsServiceBlockingStub;
 import ru.tinkoff.piapi.contract.v1.MarketDataServiceGrpc;
 import ru.tinkoff.piapi.contract.v1.MarketDataServiceGrpc.MarketDataServiceBlockingStub;
+import ru.tinkoff.piapi.contract.v1.OrdersServiceGrpc;
+import ru.tinkoff.piapi.contract.v1.SandboxServiceGrpc;
+import ru.tinkoff.piapi.contract.v1.SandboxServiceGrpc.SandboxServiceBlockingStub;
 
 @Configuration @Getter
 public class TInvestApiConfig {
@@ -41,4 +44,7 @@ public class TInvestApiConfig {
         return MarketDataServiceGrpc.newBlockingStub(tInvestApiManagedChannel); // Создание клиента с использованием канала
     }
 
+    @Bean SandboxServiceBlockingStub sandboxServiceBlockingStub(@Qualifier("tInvestApiManagedChannel") ManagedChannel tInvestApiManagedChannel) {
+        return SandboxServiceGrpc.newBlockingStub(tInvestApiManagedChannel);
+    }
 }
