@@ -11,7 +11,7 @@ spring:
 server:
   port: 9981
 
-# ============== gRPC ==============
+# ============== gRPC =================
 analytics:
   server:
     python:
