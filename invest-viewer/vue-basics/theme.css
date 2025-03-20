@@ -132,6 +132,15 @@ textarea::placeholder {
     margin: 1rem 0;
 }
 
+.span.primary{
+    background-color: #3498db;
+    border-color: #3498db;
+}
+.span.danger{
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
 /* Utility classes */
 .text-center { text-align: center; }
 .mt-1 { margin-top: 1rem; }

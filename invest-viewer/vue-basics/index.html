@@ -7,21 +7,47 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+
 <div class="container" id="app">
     <div class="card">
         <h1 class="mb-1 mb-2 p-2">{{ title }}</h1>
-        <textarea name="add" v-bind:placeholder="textAreaPlaceholder"
-                  v-bind:value="textAreaInputValue" v-on:input="textAreaInputValueHandler"></textarea>
-        <button class="button primary" v-on:click="addNewCandle">
+
+        <label>
+            <input name="add"
+                   :style="{
+               color: textAreaInputValue?.length > 7 ? 'red' :
+                      textAreaInputValue?.length > 3 ? 'orange' : 'black'
+           }"
+                   :placeholder="textAreaPlaceholder"
+                   v-model="textAreaInputValue"
+                   @keydown.enter="addNewCandle"/>
+        </label>
+
+        <button class="button primary" @click="addNewCandle">
             Добавить
         </button>
+
+        <hr v-if="candles.length != 0"> <!-- отображать, если список свеч не пустой-->
+        <div v-else>Свеч нет</div>
         <div>
             <ul>
-                <li v-for="candle in candles">
-                    {{  candle }}
+                <li v-for="(candle, index) in candles">
+                    <span :class="index > 3 ? 'span danger' : 'span primary'">{{ toUpperCase(candle)
+                        }}</span>
+                    <button class="button danger" @click="deleteLastCandle(index)">
+                        Удалить
+                    </button>
                 </li>
+
+                <hr>
+                <li>
+                    <strong>Общее количество: {{ candles.length }}</strong>
+                    <strong>| {{ doubleThisValue }}</strong>
+                </li>
+
             </ul>
         </div>
+        <hr v-if="candles.length != 0"> <!-- отображать, если список свеч не пустой-->
     </div>
 </div>
 
