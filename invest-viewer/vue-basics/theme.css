@@ -19,7 +19,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     color: #2c3e50;
-    margin-top: 1.5em;
+    margin-top: 0.1em;
     margin-bottom: 0.5em;
     font-weight: 600;
 }
@@ -40,16 +40,58 @@ a:hover {
     color: #2980b9;
 }
 
+/* Containers */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    margin: 0 auto;
+    max-width: 800px;
+}
+
 /* Buttons */
 .button {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     padding: 0.8rem 1.5rem;
     background-color: #3498db;
     color: white;
-    border-radius: 5px;
-    transition: transform 0.2s ease, background-color 0.3s ease;
-    border: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    font-weight: 500;
     cursor: pointer;
+}
+
+.button.primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.button.success {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+.button.danger {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.button.warning {
+    background-color: #f1c40f;
+    border-color: #f1c40f;
+    color: #2c3e50;
+}
+
+.button.ghost {
+    background-color: transparent;
+    border-color: #3498db;
+    color: #3498db;
 }
 
 .button:hover {
@@ -71,6 +113,14 @@ input:focus, textarea:focus {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Стили для placeholder */
+input::placeholder,
+textarea::placeholder {
+    color: #aaa; /* Цвет текста placeholder */
+    opacity: 1; /* Убедитесь, что opacity равен 1 */
+    font-style: italic; /* Можно добавить курсив для выделения */
 }
 
 /* Cards */
