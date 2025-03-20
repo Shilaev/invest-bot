@@ -20,6 +20,7 @@ import ru.shilaev.investvisor.dto.controller.GetHistoricCandlesRequestDto;
 import ru.shilaev.investvisor.dto.model.InstrumentHistoricCandleDto;
 import ru.shilaev.investvisor.service.*;
 import ru.tinkoff.piapi.contract.v1.*;
+import ru.tinkoff.piapi.contract.v1.MarketDataServiceGrpc.MarketDataServiceBlockingStub;
 
 import java.util.ArrayList;
 
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 public class StatisticsController {
 
     // Сервисы, используемые в контроллере
+    private final MarketDataServiceBlockingStub marketDataServiceBlockingStub;
     private final TInvestService tInvestService;
     private final UtilsService utilsService;
     private final ExcelService excelService;
@@ -46,6 +48,11 @@ public class StatisticsController {
 
         // Получение ответа от сервиса с найденными инструментами
         FindInstrumentResponse instruments = tInvestService.findInstrument(findInstrumentRequest);
+        GetTradingStatusResponse tradingStatus = marketDataServiceBlockingStub.getTradingStatus(GetTradingStatusRequest.newBuilder()
+                .setInstrumentId(instruments.getInstruments(0).getFigi())
+                .build()
+        );
+
 
         // Преобразование списка инструментов в Flux строк
         return Flux.fromIterable(instruments.getInstrumentsList())
@@ -58,6 +65,7 @@ public class StatisticsController {
                             "TYPE: " + instrument.getInstrumentType() + "\n" +
                             "LOT: " + instrument.getLot() + "\n" +
                             "UID: " + instrument.getUid() + "\n" +
+                            "TRADING STATUS: " + tradingStatus + "\n" +
                             "==========================================" + "\n" +
                             "\n";
                     return stringBuilder;
