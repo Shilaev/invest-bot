@@ -75,7 +75,7 @@ venv.bak
 .hypothesis
 .tox
 .nox
-application.*.yml
+**/application-sandbox.yml
 
 # Логи
 .log
