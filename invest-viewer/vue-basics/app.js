@@ -1,22 +1,22 @@
-const App = {
+const investViewer = {
     data() {
         return {
-            title: 'Список заметок:',
-            addButtonLable: 'Добавить',
-            placeholderTest: 'Текст заметки',
-            inputValue: '',
-            notes: []
+            title: 'invest-viewer',
+            textAreaPlaceholder: 'Добавить свечу',
+            textAreaInputValue: '',
+            candles: []
         }
     },
     methods: {
-        inputChangeHandler(event){
-            this.inputValue = event.target.value
+        textAreaInputValueHandler(event){
+          this.textAreaInputValue = event.target.value
         },
-        addNewNote(){
-            this.notes.push(this.inputValue)
-            this.inputValue = ''
+        addNewCandle() {
+            this.candles.push(this.textAreaInputValue)
+            this.textAreaInputValue = null
         }
     }
 }
 
-Vue.createApp(App).mount('#app')
+Vue.createApp(investViewer).mount('#app')
+

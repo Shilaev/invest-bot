@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Vue основы</title>
+    <title>invest-viewer</title>
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
 <div class="container" id="app">
     <div class="card">
-        <h1>{{ title }}</h1>
-        <div class="input">
-            <input
-                    type="text"
-                    v-bind:placeholder="placeholderTest"
-                    v-bind:value="inputValue"
-                    v-on:input="inputChangeHandler"
-            />
+        <h1 class="mb-1 mb-2 p-2">{{ title }}</h1>
+        <textarea name="add" v-bind:placeholder="textAreaPlaceholder"
+                  v-bind:value="textAreaInputValue" v-on:input="textAreaInputValueHandler"></textarea>
+        <button class="button primary" v-on:click="addNewCandle">
+            Добавить
+        </button>
+        <div>
+            <ul>
+                <li v-for="candle in candles">
+                    {{  candle }}
+                </li>
+            </ul>
         </div>
-        <button class="button primary" v-on:click="addNewNote">{{ addButtonLable }}</button>
-        <ul>
-            <li v-for="note in notes">
-                {{ note }}
-            </li>
-        </ul>
     </div>
 </div>
+
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="app.js"></script>
