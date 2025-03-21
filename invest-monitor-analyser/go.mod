@@ -1,1 +1,0 @@
-module invest-monitor-analyser

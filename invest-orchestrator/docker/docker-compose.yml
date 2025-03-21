@@ -1,0 +1,46 @@
+version: '3.9'
+
+networks:
+  invest-orchestrator:
+    driver: bridge
+    
+services:
+  
+  invest-orchestrator-db:
+    env_file:
+      - .env
+    container_name: ${invest_orchestrator_container_name}
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${invest_orchestrator_name}
+      POSTGRES_USER: ${invest_orchestrator_username}
+      POSTGRES_PASSWORD: ${invest_orchestrator_password}
+    ports:
+      - "${invest_orchestrator_port}:5432"
+    networks:
+      - invest-orchestrator
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${invest_orchestrator_username} -d ${invest_orchestrator_name}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+      
+  invest-orchestrator-flyway:
+    image: flyway/flyway:11.3.1
+    container_name: invest-orchestrator-flyway-migrations
+    depends_on:
+      - invest-orchestrator-db
+    networks:
+      - invest-orchestrator
+    volumes:
+      - ./db/flyway-migration:/flyway/sql:rw
+    environment:
+      FLYWAY_URL: jdbc:postgresql://invest-orchestrator-db:5432/${invest_orchestrator_name}
+      FLYWAY_USER: ${invest_orchestrator_username}
+      FLYWAY_PASSWORD: ${invest_orchestrator_password}
+      FLYWAY_BASELINE_ON_MIGRATE: ${flyway_baseline_on_migrate}
+      FLYWAY_CLEAN_DISABLED: ${flyway_clean_disabled}
+      FLYWAY_SCHEMAS: ${flyway_schemas}
+    command: ${flyway_commands}
