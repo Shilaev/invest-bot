@@ -48,11 +48,13 @@
             </ul>
         </div>
         <hr v-if="candles.length != 0"> <!-- отображать, если список свеч не пустой-->
+
+        <div id="chart" style="width: 100%; height: 400px;"></div>
     </div>
 </div>
 
-
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
