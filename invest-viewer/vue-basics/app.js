@@ -32,23 +32,27 @@ const InvestViewer = {
             this.updateChart();
         },
         updateChart() {
+            // Преобразуем candles в формат, который ожидает ECharts для свечного графика
+            const candlestickData = this.candles.map(candle => {
+                const open = candle;
+                const close = candle+10;
+                const lowest = open - 1; // Минимальное значение
+                const highest = open + 1; // Максимальное значение
+                return [close, open, highest, lowest]; // Правильный порядок данных
+            });
+
             const option = {
-                title: {
-                    text: 'График свечей'
-                },
-                tooltip: {},
                 xAxis: {
                     type: 'category',
-                    data: this .candles.map((_, index) => `Свеча ${index + 1}`)
+                    data: this.candles.map((_, index) => `Свеча ${index + 1}`) // Подписи для оси X
                 },
-                yAxis: {
-                    type: 'value'
-                },
-                series: [{
-                    name: 'Свечи',
-                    type: 'bar',
-                    data: this.candles.map(candle => parseFloat(candle) || 0) // Преобразуем свечи в числа
-                }]
+                yAxis: {},
+                series: [
+                    {
+                        type: 'candlestick',
+                        data: candlestickData // Данные для свечного графика
+                    }
+                ]
             };
             this.chart.setOption(option);
         }
