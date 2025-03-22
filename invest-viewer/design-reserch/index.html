@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en,ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Vuetify</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.7.18/dist/vuetify.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css"/>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@3.7.18/dist/vuetify.min.js"></script>
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://cdn.jsdelivr.net/npm/vue@latest/dist/vue.esm-browser.js",
+            "vuetify": "https://cdn.jsdelivr.net/npm/vuetify@3.7.18/dist/vuetify.esm.js"
+          }
+        }
+    </script>
+</head>
+<body>
+<div id="vueProject">
+    {{ message }}
+
+    <v-btn append-icon="$vuetify">
+        Button
+    </v-btn>
+
+
+    <div id="chart" style="width: 100%; height: 400px;"></div>
+
+</div>
+<script type="module" src="script.js"></script>
+</body>
+</html>
