@@ -1,15 +1,18 @@
-<script>
-export default {
-  name: 'App',
-  components: {
-  }
-}
-</script>
-
 <template>
-  <the-header></the-header>
+  <v-app>
+    <v-btn>Hello</v-btn>
+  </v-app>
 </template>
 
-<style>
+<script>
 
-</style>
+export default {
+  name: 'App',
+
+  components: {},
+
+  data: () => ({
+    //
+  })
+}
+</script>

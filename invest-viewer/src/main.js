@@ -1,8 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import TheHeader from '@/components/TheHeader.vue'
+import vuetify from './plugins/vuetify'
+import { loadFonts } from './plugins/webfontloader'
 
-// global registration
+loadFonts()
+
 createApp(App)
-  .component('the-header', TheHeader)
+  .use(vuetify)
   .mount('#app')
