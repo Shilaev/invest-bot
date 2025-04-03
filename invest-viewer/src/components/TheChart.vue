@@ -1,5 +1,5 @@
 <template>
-  <v-card class="ma-4 pa-4">
+  <v-card>
     <v-card-title>Пример графика</v-card-title>
     <v-card-text>
       <v-chart

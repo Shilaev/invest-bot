@@ -1,24 +1,32 @@
 <template>
   <v-app>
     <!-- Верхняя панель -->
-    <v-app-bar color="red">
+    <v-app-bar>
       <v-app-bar-nav-icon @click="toggleAsideBar"></v-app-bar-nav-icon>
       <v-spacer/>
-      <v-container class="d-flex align-center justify-end pr-3">
-        <v-btn>Кнопка 1</v-btn>
-        <v-btn>Кнопка 2</v-btn>
-        <v-btn>Кнопка 3</v-btn>
-        <v-avatar color="surface-variant" size="48"></v-avatar>
-      </v-container>
+      <v-list class="d-flex justify-end">
+        <v-list-item
+            class="text-center"
+            title="Кнопка"
+            @click="handleClick"
+            active-class="bg-primary text-white"
+            link
+        />
+      </v-list>
+      <v-avatar color="surface-variant" size="48"></v-avatar>
     </v-app-bar>
 
     <!-- Боковое меню -->
-    <v-navigation-drawer v-model="isAsideBarShowed" color="red">
-      <v-list nav>
-        <v-list-item title="Боковое меню" link></v-list-item>
-        <v-list-item>
-          <v-btn color="white" text="asdfasdf"></v-btn>
-        </v-list-item>
+    <v-navigation-drawer v-model="isAsideBarShowed">
+      <v-list nav density="comfortable">
+        <!-- Элементы меню -->
+        <v-list-item
+            class="text-center"
+            title="Кнопка"
+            @click="handleClick"
+            active-class="bg-primary text-white"
+            link
+        />
       </v-list>
     </v-navigation-drawer>
 
@@ -31,7 +39,7 @@
 
         <v-row>
           <v-col>
-            <v-sheet elevation="2" rounded height="624">
+            <v-sheet rounded height="624">
               <the-chart/>
             </v-sheet>
           </v-col>
