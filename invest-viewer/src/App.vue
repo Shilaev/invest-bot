@@ -2,9 +2,11 @@
   <v-app>
     <!-- Верхняя панель -->
     <v-app-bar>
+      <!-- Кнопка показать/скрыть левое меню -->
       <v-app-bar-nav-icon @click="toggleAsideBar"></v-app-bar-nav-icon>
       <v-spacer/>
-      <v-list class="d-flex justify-end">
+      <!-- Управляющие кнопки -->
+      <v-list>
         <v-list-item
             class="text-center"
             title="Кнопка"
@@ -13,7 +15,7 @@
             link
         />
       </v-list>
-      <v-avatar color="surface-variant" size="48"></v-avatar>
+      <v-avatar color="surface-variant" size="48" class="mr-5"></v-avatar>
     </v-app-bar>
 
     <!-- Боковое меню -->
@@ -33,23 +35,30 @@
     <!-- Основной контент -->
     <v-main>
       <v-container>
+        <!-- Заголовок страницы -->
         <v-row>
           <v-col><h1 class="text-h2">Заголовок</h1></v-col>
         </v-row>
 
+        <!-- Контент -->
         <v-row>
+          <!-- Контент слева длинный -->
           <v-col>
             <v-sheet rounded height="624">
               <the-chart/>
             </v-sheet>
           </v-col>
 
+          <!-- Контент справа -->
           <v-col>
+            <!-- Контент справа верх -->
             <v-row>
               <v-col>
                 <v-sheet elevation="2" rounded height="300" color="blue"></v-sheet>
               </v-col>
             </v-row>
+
+            <!-- Контент справа низ -->
             <v-row>
               <v-col>
                 <v-sheet elevation="2" rounded height="300" color="orange"></v-sheet>
@@ -71,13 +80,16 @@ export default {
 
   data () {
     return {
-      isAsideBarShowed: false // Управляет отображением бокового меню
+      isAsideBarShowed: false // Боковое меню открыто?
     }
   },
 
   methods: {
     toggleAsideBar () {
-      this.isAsideBarShowed = !this.isAsideBarShowed // Переключает состояние
+      this.isAsideBarShowed = !this.isAsideBarShowed // Переключает состояние открытости бокового меню
+    },
+    clickChecker () {
+      console.log('check') // утилитарный метод, для проверки, что кнопка срабатывает нормально
     }
   }
 }
