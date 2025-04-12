@@ -24,8 +24,8 @@
         <!-- Элементы меню -->
         <v-list-item
             class="text-center"
-            title="Кнопка"
-            @click="handleClick"
+            title="AxiosBtn"
+            @click="handleAxiosBtnClick"
             active-class="bg-primary text-white"
             link
         />
@@ -45,7 +45,7 @@
           <!-- Контент слева длинный -->
           <v-col>
             <v-sheet rounded height="624">
-              <the-chart/>
+              {{ handleAxiosBtnClickResponseData }}
             </v-sheet>
           </v-col>
 
@@ -72,24 +72,37 @@
 </template>
 
 <script>
-import TheChart from '@/components/TheChart.vue'
+import { ref } from 'vue'
+import axios from 'axios'
 
 export default {
   name: 'App',
-  components: { TheChart },
+  setup () {
+    const isAsideBarShowed = ref(false) // Боковое меню открыто?
+    const handleAxiosBtnClickResponseData = ref(null)
 
-  data () {
-    return {
-      isAsideBarShowed: false // Боковое меню открыто?
+    const toggleAsideBar = () => {
+      isAsideBarShowed.value = !isAsideBarShowed.value // Переключает состояние открытости бокового меню
     }
-  },
 
-  methods: {
-    toggleAsideBar () {
-      this.isAsideBarShowed = !this.isAsideBarShowed // Переключает состояние открытости бокового меню
-    },
-    clickChecker () {
-      console.log('check') // утилитарный метод, для проверки, что кнопка срабатывает нормально
+    const handleAxiosBtnClick = async () => {
+      try {
+        const response = await axios.post('http://localhost:9981/statistics/api/find-instrument', {
+          query: 'ROSN',
+          instrumentType: 'INSTRUMENT_TYPE_SHARE',
+          apiTradeAvailableFlag: 'true'
+        })
+        handleAxiosBtnClickResponseData.value = response.data
+        console.log('Response: ', response.data)
+      } catch (error) {
+        console.error('Error: ', error)
+      }
+    }
+    return {
+      isAsideBarShowed,
+      toggleAsideBar,
+      handleAxiosBtnClick,
+      handleAxiosBtnClickResponseData
     }
   }
 }

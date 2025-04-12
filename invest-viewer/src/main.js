@@ -15,7 +15,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 import {
   LineChart,
   BarChart,
-  CandlestickChart,       // Свечной график
+  CandlestickChart,
   ScatterChart,
   PieChart
 } from 'echarts/charts'

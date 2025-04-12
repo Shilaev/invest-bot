@@ -15,6 +15,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("portfolio/api")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class PortfolioController {
 
     private final SandboxServiceBlockingStub sandboxServiceBlockingStub;
