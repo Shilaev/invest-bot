@@ -2,10 +2,14 @@ package ru.shilaev.investorchestrator.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.shilaev.investorchestrator.dto.controller.PortfolioController.*;
 import ru.shilaev.investorchestrator.dto.controller.PostOrderRequestDto;
+import ru.shilaev.investorchestrator.service.PortfolioControllerService;
 import ru.shilaev.investorchestrator.service.UtilsService;
 import ru.tinkoff.piapi.contract.v1.*;
 import ru.tinkoff.piapi.contract.v1.SandboxServiceGrpc.SandboxServiceBlockingStub;
@@ -18,49 +22,33 @@ import java.util.UUID;
 @CrossOrigin(origins = "*")
 public class PortfolioController {
 
+    //todo: удалить после вынесения логики в PortfolioControllerService
     private final SandboxServiceBlockingStub sandboxServiceBlockingStub;
+    private final PortfolioControllerService portfolioControllerService;
     private final UtilsService utilsService;
+    private static final Logger logger = LoggerFactory.getLogger(PortfolioController.class);
 
     // Зарегистрировать счет
     @PostMapping("open-account")
-    public Mono<String> openAccount(@Valid @RequestParam String name) {
-        OpenSandboxAccountRequest openSandboxAccountRequest =
-                OpenSandboxAccountRequest.newBuilder()
-                        .setName(name)
-                        .build();
+    public Mono<OpenAccountResponseDto> openAccount(@Valid @RequestBody OpenAccountRequestDto openAccountRequestDto) {
+        OpenAccountResponseDto openAccountResponseDto = portfolioControllerService.openAccount(openAccountRequestDto);
 
-        OpenSandboxAccountResponse openSandboxAccountResponse = sandboxServiceBlockingStub.openSandboxAccount(openSandboxAccountRequest);
-        String accountId = openSandboxAccountResponse.getAccountId();
+        logger.info("Account: {}\nwith id: {} registered successfully",
+                openAccountRequestDto.accountTitle(), openAccountResponseDto.accountId());
+        return Mono.just(openAccountResponseDto);
+    }
 
-        return Mono.just("Account: " + name + "\nwith id: " + accountId + " registered successfully");
+    // Закрыть счет
+    @PostMapping("close-account")
+    public void closeAccount(@Valid @RequestBody CloseAccountRequestDto closeAccountRequestDto) {
+        logger.info("Account with id: {} closed successfully", closeAccountRequestDto.accountId());
+        portfolioControllerService.closeAccount(closeAccountRequestDto);
     }
 
     // Получить список счетов
     @GetMapping("get-accounts")
-    public Flux<String> getAccounts(@Valid @RequestParam int accountStatus) {
-        return Flux.fromIterable(sandboxServiceBlockingStub.getSandboxAccounts(
-                GetAccountsRequest.newBuilder().setStatusValue(accountStatus).build()
-        ).getAccountsList()).map(account -> {
-            String stringBuilder = "==========================================" + "\n" +
-                    "ID: " + account.getId() + "\n" +
-                    "NAME: " + account.getName() + "\n" +
-                    "STATUS: " + account.getStatus() + "\n" +
-                    "OPEN DATE: " + utilsService.convertTimestampToInstant(account.getOpenedDate()) + "\n" +
-                    "CLOSE DATE: " + utilsService.convertTimestampToInstant(account.getClosedDate()) + "\n" +
-                    "ACCESS LEVEL " + account.getAccessLevel() + "\n" +
-                    "==========================================" + "\n" +
-                    "\n";
-            return stringBuilder;
-        });
-    }
-
-    @PostMapping("close-account")
-    public void closeAccount(@Valid @RequestParam String accountId) {
-        sandboxServiceBlockingStub.closeSandboxAccount(
-                CloseSandboxAccountRequest.newBuilder()
-                        .setAccountId(accountId)
-                        .build()
-        );
+    public Flux<GetSandboxAccountsResponseDto> getAccounts(@Valid @RequestBody GetSandboxAccountsRequestDto getSandboxAccountsRequestDto) {
+        return portfolioControllerService.getAccounts(getSandboxAccountsRequestDto);
     }
 
     @PostMapping("pay-in")
