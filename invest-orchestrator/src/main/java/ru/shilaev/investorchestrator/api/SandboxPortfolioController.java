@@ -82,6 +82,8 @@ public class SandboxPortfolioController {
         return Mono.just(postOrderRequestDto.toString());
     }
 
+    //todo: Заметил, что нельзя достать баланс из Account, можно только из Portfolio, надо переделать сервис с
+    // новыми знаниями
     @GetMapping("get-portfolio")
     public Mono<String> getPortfolio(@Valid @RequestParam String accountId) {
         PortfolioResponse sandboxPortfolio = sandboxServiceBlockingStub.getSandboxPortfolio(PortfolioRequest.newBuilder()
