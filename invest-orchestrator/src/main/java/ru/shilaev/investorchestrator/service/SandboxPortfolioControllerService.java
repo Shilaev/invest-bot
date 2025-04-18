@@ -11,7 +11,7 @@ import ru.tinkoff.piapi.contract.v1.SandboxServiceGrpc.SandboxServiceBlockingStu
 
 @Service
 @RequiredArgsConstructor
-public class PortfolioControllerService {
+public class SandboxPortfolioControllerService {
 
     private final SandboxServiceBlockingStub sandboxServiceBlockingStub;
     private final ConvertService convertService;

@@ -6,7 +6,7 @@
         </encoder>
     </appender>
 
-    <logger name="ru.shilaev.investorchestrator.api.PortfolioController" level="DEBUG" additivity="false">
+    <logger name="ru.shilaev.investorchestrator.api.SandboxPortfolioController" level="DEBUG" additivity="false">
         <appender-ref ref="PORTFOLIO"/>
     </logger>
 

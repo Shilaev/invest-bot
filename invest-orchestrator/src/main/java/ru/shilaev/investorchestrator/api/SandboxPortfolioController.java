@@ -9,7 +9,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.shilaev.investorchestrator.dto.controller.PortfolioController.*;
 import ru.shilaev.investorchestrator.dto.controller.PostOrderRequestDto;
-import ru.shilaev.investorchestrator.service.PortfolioControllerService;
+import ru.shilaev.investorchestrator.service.SandboxPortfolioControllerService;
 import ru.shilaev.investorchestrator.service.ConvertService;
 import ru.tinkoff.piapi.contract.v1.*;
 import ru.tinkoff.piapi.contract.v1.SandboxServiceGrpc.SandboxServiceBlockingStub;
@@ -20,18 +20,18 @@ import java.util.UUID;
 @RequestMapping("portfolio/api")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-public class PortfolioController {
+public class SandboxPortfolioController {
 
     //todo: удалить после вынесения логики в PortfolioControllerService
     private final SandboxServiceBlockingStub sandboxServiceBlockingStub;
-    private final PortfolioControllerService portfolioControllerService;
+    private final SandboxPortfolioControllerService sandboxPortfolioControllerService;
     private final ConvertService convertService;
-    private static final Logger logger = LoggerFactory.getLogger(PortfolioController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SandboxPortfolioController.class);
 
     //Зарегистрировать счет
     @PostMapping("open-account")
     public Mono<OpenAccountResponseDto> openAccount(@Valid @RequestBody OpenAccountRequestDto openAccountRequestDto) {
-        OpenAccountResponseDto openAccountResponseDto = portfolioControllerService.openAccount(openAccountRequestDto);
+        OpenAccountResponseDto openAccountResponseDto = sandboxPortfolioControllerService.openAccount(openAccountRequestDto);
 
         logger.info("Account: {}\nwith id: {} registered successfully",
                 openAccountRequestDto.accountTitle(), openAccountResponseDto.accountId());
@@ -42,19 +42,19 @@ public class PortfolioController {
     @PostMapping("close-account")
     public void closeAccount(@Valid @RequestBody CloseAccountRequestDto closeAccountRequestDto) {
         logger.info("Account with id: {} closed successfully", closeAccountRequestDto.accountId());
-        portfolioControllerService.closeAccount(closeAccountRequestDto);
+        sandboxPortfolioControllerService.closeAccount(closeAccountRequestDto);
     }
 
     //Получить список счетов
     @GetMapping("get-accounts")
     public Flux<GetSandboxAccountsResponseDto> getAccounts(@Valid @RequestBody GetSandboxAccountsRequestDto getSandboxAccountsRequestDto) {
-        return portfolioControllerService.getAccounts(getSandboxAccountsRequestDto);
+        return sandboxPortfolioControllerService.getAccounts(getSandboxAccountsRequestDto);
     }
 
     //Внести деньги на счет
     @PostMapping("pay-in")
     public Mono<SandboxPayInResponseDto> payIn(@Valid @RequestBody SandboxPayInRequestDto requestDto) {
-        return portfolioControllerService.payIn(requestDto);
+        return sandboxPortfolioControllerService.payIn(requestDto);
     }
 
     @GetMapping("get-withdraw-limits")
