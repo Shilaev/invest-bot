@@ -5,7 +5,6 @@ networks:
     driver: bridge
     
 services:
-  
   invest-orchestrator-db:
     env_file:
       - .env

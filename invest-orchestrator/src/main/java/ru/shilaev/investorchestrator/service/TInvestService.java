@@ -17,7 +17,7 @@ public class TInvestService {
     // Блокирующие клиенты для работы с сервисами инструментов и рыночных данных
     private final InstrumentsServiceBlockingStub instrumentsServiceBlockingStub;
     private final MarketDataServiceBlockingStub marketDataServiceBlockingStub;
-    private final UtilsService utilsService; // Сервис для утилитных функций
+    private final ConvertService convertService; // Сервис для утилитных функций
 
     // Метод для поиска инструмента по запросу
     public FindInstrumentResponse findInstrument(FindInstrumentRequest request) {
@@ -46,13 +46,13 @@ public class TInvestService {
         for (HistoricCandle candle : rawHistoricalCandles) {
             formatedCandles.add(new InstrumentHistoricCandleDto(
                     instrumentId, // Идентификатор инструмента
-                    utilsService.convertTimestampToInstant(candle.getTime()), // Время свечи
+                    convertService.convertTimestampToInstant(candle.getTime()), // Время свечи
                     candleInterval, // Интервал свечи
                     candleSource, // Источник данных
-                    utilsService.convertQuotationToBigDecimal(candle.getOpen()),  // Цена открытия
-                    utilsService.convertQuotationToBigDecimal(candle.getClose()), // Цена закрытия
-                    utilsService.convertQuotationToBigDecimal(candle.getHigh()),  // Максимальная цена
-                    utilsService.convertQuotationToBigDecimal(candle.getLow())    // Минимальная цена
+                    convertService.convertQuotationToBigDecimal(candle.getOpen()),  // Цена открытия
+                    convertService.convertQuotationToBigDecimal(candle.getClose()), // Цена закрытия
+                    convertService.convertQuotationToBigDecimal(candle.getHigh()),  // Максимальная цена
+                    convertService.convertQuotationToBigDecimal(candle.getLow())    // Минимальная цена
             ));
         }
 

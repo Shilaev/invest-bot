@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 import ru.shilaev.investorchestrator.dto.controller.PortfolioController.*;
 import ru.shilaev.investorchestrator.dto.controller.PostOrderRequestDto;
 import ru.shilaev.investorchestrator.service.PortfolioControllerService;
-import ru.shilaev.investorchestrator.service.UtilsService;
+import ru.shilaev.investorchestrator.service.ConvertService;
 import ru.tinkoff.piapi.contract.v1.*;
 import ru.tinkoff.piapi.contract.v1.SandboxServiceGrpc.SandboxServiceBlockingStub;
 
@@ -25,10 +25,10 @@ public class PortfolioController {
     //todo: удалить после вынесения логики в PortfolioControllerService
     private final SandboxServiceBlockingStub sandboxServiceBlockingStub;
     private final PortfolioControllerService portfolioControllerService;
-    private final UtilsService utilsService;
+    private final ConvertService convertService;
     private static final Logger logger = LoggerFactory.getLogger(PortfolioController.class);
 
-    // Зарегистрировать счет
+    //Зарегистрировать счет
     @PostMapping("open-account")
     public Mono<OpenAccountResponseDto> openAccount(@Valid @RequestBody OpenAccountRequestDto openAccountRequestDto) {
         OpenAccountResponseDto openAccountResponseDto = portfolioControllerService.openAccount(openAccountRequestDto);
@@ -38,31 +38,23 @@ public class PortfolioController {
         return Mono.just(openAccountResponseDto);
     }
 
-    // Закрыть счет
+    //Закрыть счет
     @PostMapping("close-account")
     public void closeAccount(@Valid @RequestBody CloseAccountRequestDto closeAccountRequestDto) {
         logger.info("Account with id: {} closed successfully", closeAccountRequestDto.accountId());
         portfolioControllerService.closeAccount(closeAccountRequestDto);
     }
 
-    // Получить список счетов
+    //Получить список счетов
     @GetMapping("get-accounts")
     public Flux<GetSandboxAccountsResponseDto> getAccounts(@Valid @RequestBody GetSandboxAccountsRequestDto getSandboxAccountsRequestDto) {
         return portfolioControllerService.getAccounts(getSandboxAccountsRequestDto);
     }
 
+    //Внести деньги на счет
     @PostMapping("pay-in")
-    public Mono<String> payIn(@RequestParam String accountId,
-                              @RequestParam long amount) {
-        return Mono.just(String.valueOf(
-                sandboxServiceBlockingStub.sandboxPayIn(SandboxPayInRequest.newBuilder()
-                        .setAccountId(accountId)
-                        .setAmount(MoneyValue.newBuilder()
-                                .setCurrency("643")
-                                .setUnits(amount)
-                                .build())
-                        .build()
-                ).getBalance().getUnits()));
+    public Mono<SandboxPayInResponseDto> payIn(@Valid @RequestBody SandboxPayInRequestDto requestDto) {
+        return portfolioControllerService.payIn(requestDto);
     }
 
     @GetMapping("get-withdraw-limits")

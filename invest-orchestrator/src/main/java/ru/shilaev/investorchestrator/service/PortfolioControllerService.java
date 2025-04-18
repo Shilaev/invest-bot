@@ -3,7 +3,7 @@ package ru.shilaev.investorchestrator.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Scheduler;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.shilaev.investorchestrator.dto.controller.PortfolioController.*;
 import ru.tinkoff.piapi.contract.v1.*;
@@ -14,46 +14,69 @@ import ru.tinkoff.piapi.contract.v1.SandboxServiceGrpc.SandboxServiceBlockingStu
 public class PortfolioControllerService {
 
     private final SandboxServiceBlockingStub sandboxServiceBlockingStub;
-    private final UtilsService utilsService;
+    private final ConvertService convertService;
 
-    public OpenAccountResponseDto openAccount(OpenAccountRequestDto openAccountRequestDto) {
+    //Регистрация счета
+    public OpenAccountResponseDto openAccount(OpenAccountRequestDto requestDto) {
         OpenSandboxAccountRequest openSandboxAccountRequest =
                 OpenSandboxAccountRequest.newBuilder()
-                        .setName(openAccountRequestDto.accountTitle())
+                        .setName(requestDto.accountTitle())
                         .build();
 
         OpenSandboxAccountResponse openSandboxAccountResponse = sandboxServiceBlockingStub.openSandboxAccount(openSandboxAccountRequest);
-        OpenAccountResponseDto openAccountResponseDto = new OpenAccountResponseDto(openSandboxAccountResponse.getAccountId());
-
-        return openAccountResponseDto;
+        return new OpenAccountResponseDto(openSandboxAccountResponse.getAccountId());
     }
 
-    public void closeAccount(CloseAccountRequestDto closeAccountRequestDto) {
+    //Удаление счета
+    public void closeAccount(CloseAccountRequestDto requestDto) {
         sandboxServiceBlockingStub.closeSandboxAccount(
                 CloseSandboxAccountRequest.newBuilder()
-                        .setAccountId(closeAccountRequestDto.accountId())
+                        .setAccountId(requestDto.accountId())
                         .build()
         );
     }
 
-    public Flux<GetSandboxAccountsResponseDto> getAccounts(GetSandboxAccountsRequestDto getSandboxAccountsRequestDto) {
+    //Вывести все зарегистрированные счета
+    public Flux<GetSandboxAccountsResponseDto> getAccounts(GetSandboxAccountsRequestDto requestDto) {
         return Flux.fromIterable(sandboxServiceBlockingStub.getSandboxAccounts(
-                        GetAccountsRequest.newBuilder().setStatusValue(getSandboxAccountsRequestDto.accountStatus()).build()
+                        GetAccountsRequest.newBuilder().setStatusValue(requestDto.accountStatus()).build()
                 ).getAccountsList())
                 .parallel(2)
                 .runOn(Schedulers.parallel())
-                .map(account -> {
-                    GetSandboxAccountsResponseDto getSandboxAccountsResponseDto = new GetSandboxAccountsResponseDto(
-                            account.getId(),
-                            account.getName(),
-                            account.getStatus().getNumber(),
-                            utilsService.convertTimestampToInstant(account.getOpenedDate()),
-                            utilsService.convertTimestampToInstant(account.getClosedDate()),
-                            account.getAccessLevel().getNumber()
-                    );
-                    return getSandboxAccountsResponseDto;
-                })
+                .map(account -> new GetSandboxAccountsResponseDto(
+                        account.getId(),
+                        account.getName(),
+                        account.getStatus().getNumber(),
+                        convertService.convertTimestampToInstant(account.getOpenedDate()),
+                        convertService.convertTimestampToInstant(account.getClosedDate()),
+                        account.getAccessLevel().getNumber()
+                ))
                 .sequential();
     }
+
+    //Внести деньги на счет
+    public Mono<SandboxPayInResponseDto> payIn(SandboxPayInRequestDto requestDto) {
+        SandboxPayInResponse sandboxPayInResponse = sandboxServiceBlockingStub.sandboxPayIn(SandboxPayInRequest.newBuilder()
+                .setAccountId(requestDto.accountId())
+                .setAmount(MoneyValue.newBuilder()
+                        //todo: Нужно добавить метод в ConvertService, который будет конвертировать валюты
+                        // по умолчанию рублевый счет, поэтому если кладутся доллары. нужно сконвертировать их в рубли
+                        // по текущему курсу
+                        .setCurrency(requestDto.currency() == null ? "643" : //Код Рубля по умолчанию
+                                requestDto.currency())
+                        .setUnits(requestDto.value())
+                        .build())
+                .build()
+        );
+
+        //Текущий баланс
+        return Mono.just(new SandboxPayInResponseDto(
+                requestDto.accountId(),
+                convertService.convertCurrencyCodeToString(requestDto.currency()), //Код в наименование валюты
+                (float) (sandboxPayInResponse.getBalance().getUnits() +
+                        sandboxPayInResponse.getBalance().getNano() / 1_000_000_000.0)
+        ));
+    }
+
 
 }

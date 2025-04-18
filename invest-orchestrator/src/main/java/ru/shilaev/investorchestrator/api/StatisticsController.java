@@ -30,7 +30,7 @@ public class StatisticsController {
     // Сервисы, используемые в контроллере
     private final MarketDataServiceBlockingStub marketDataServiceBlockingStub;
     private final TInvestService tInvestService;
-    private final UtilsService utilsService;
+    private final ConvertService convertService;
     private final ExcelService excelService;
     private final R2DBCService r2DBCService;
 
@@ -76,8 +76,8 @@ public class StatisticsController {
         // Создание запроса на получение исторических свечей
         var getCandlesRequest = GetCandlesRequest.newBuilder()
                 .setInstrumentId(requestDto.instrumentId())
-                .setFrom(utilsService.convertInstantToTimestamp(requestDto.fromDate()))
-                .setTo(utilsService.convertInstantToTimestamp(requestDto.toDate()))
+                .setFrom(convertService.convertInstantToTimestamp(requestDto.fromDate()))
+                .setTo(convertService.convertInstantToTimestamp(requestDto.toDate()))
                 .setInterval(CandleInterval.valueOf(requestDto.candleInterval()))
                 .setCandleSourceType(GetCandlesRequest.CandleSource.valueOf(requestDto.candleSource()))
                 .setLimit(requestDto.limit())
