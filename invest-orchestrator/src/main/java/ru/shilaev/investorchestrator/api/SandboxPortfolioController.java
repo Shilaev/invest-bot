@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.shilaev.investorchestrator.dto.controller.PortfolioController.*;
+import ru.shilaev.investorchestrator.dto.controller.SandboxPortfolioController.*;
 import ru.shilaev.investorchestrator.dto.controller.PostOrderRequestDto;
 import ru.shilaev.investorchestrator.service.SandboxPortfolioControllerService;
 import ru.shilaev.investorchestrator.service.ConvertService;

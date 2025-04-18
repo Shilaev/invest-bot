@@ -1,4 +1,4 @@
-package ru.shilaev.investorchestrator.dto.controller.PortfolioController;
+package ru.shilaev.investorchestrator.dto.controller.SandboxPortfolioController;
 
 public record GetSandboxAccountsRequestDto(
             int accountStatus

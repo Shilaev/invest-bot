@@ -1,6 +1,4 @@
-package ru.shilaev.investorchestrator.dto.controller.PortfolioController;
-
-import java.math.BigDecimal;
+package ru.shilaev.investorchestrator.dto.controller.SandboxPortfolioController;
 
 public record SandboxPayInRequestDto(
         String accountId,
